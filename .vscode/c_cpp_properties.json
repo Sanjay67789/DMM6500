@@ -1,0 +1,19 @@
+
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/include",
+                "C:/Program Files/IVI Foundation/VISA/Win64/Include",
+                "C:/Program Files (x86)/IVI Foundation/VISA/WinNT/include"
+            ],
+            "defines": [],
+            "windowsSdkVersion": "10.0.26100.0",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-msvc-x64"
+        }
+    ],
+    "version": 4
+}

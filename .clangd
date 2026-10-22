@@ -1,0 +1,6 @@
+CompileFlags:
+  Add:
+    - "-ID:/Procyon/Procyon sw/dmm6.5k/include"
+    - "-ID:/Procyon/Procyon sw/dmm6.5k"
+    - "-IC:/Program Files/IVI Foundation/VISA/Win64/Include"
+    - "-std=c++17"

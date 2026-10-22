@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Procyon\Procyon sw\dmm6.5k\build\CMakeFiles\8ae72961bf4e35e6a67bbf4de2a0a839\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{A5754FCF-242D-3666-A6EA-D02150409C7A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
