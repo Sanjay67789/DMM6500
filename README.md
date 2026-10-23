@@ -17,60 +17,82 @@
 
 ---
 
-## Contents
+## 📑 Contents
 
-- [Overview](#overview)
-- [Features](#features)
-- [Architecture](#architecture)
-- [Requirements](#requirements)
-- [Build and run](#build-and-run)
-- [Using the console](#using-the-console)
-- [Live JSON output](#live-json-output)
-- [Engineering-unit formatting](#engineering-unit-formatting)
-- [Adding another DMM model](#adding-another-dmm-model)
-- [Troubleshooting](#troubleshooting)
-- [Safety and limitations](#safety-and-limitations)
-- [Roadmap](#roadmap)
+- [DMM6500 Console Driver](#dmm6500-console-driver)
+  - [📑 Contents](#-contents)
+  - [🔍 Overview](#-overview)
+  - [✨ Features](#-features)
+  - [🏗️ Architecture](#️-architecture)
+    - [📁 Project Structure](#-project-structure)
+    - [🧩 Component Responsibilities](#-component-responsibilities)
+  - [⚙️ Requirements](#️-requirements)
+  - [🚀 Build and Run](#-build-and-run)
+    - [1. Configure the Project](#1-configure-the-project)
+    - [2. Build](#2-build)
+    - [3. Run](#3-run)
+    - [4. Optional Command-Line Arguments](#4-optional-command-line-arguments)
+  - [🖥️ Using the Console](#️-using-the-console)
+    - [Console Menu](#console-menu)
+  - [📡 Live JSON Output](#-live-json-output)
+    - [Example JSON Snapshot](#example-json-snapshot)
+    - [Reading JSON from Another Program](#reading-json-from-another-program)
+    - [Snapshot vs. History](#snapshot-vs-history)
+  - [📐 Engineering-Unit Formatting](#-engineering-unit-formatting)
+  - [🔌 Adding Another DMM Model](#-adding-another-dmm-model)
+  - [🛠️ Troubleshooting](#️-troubleshooting)
+  - [⚠️ Safety and Limitations](#️-safety-and-limitations)
+  - [🗺️ Roadmap](#️-roadmap)
 
-## Overview
+---
+
+## 🔍 Overview
 
 DMM6500 Console Driver is a C++17 console application that communicates with supported digital multimeters through VISA and SCPI. It provides a common driver interface, a model-selection factory, a console workflow, and a JSON snapshot that another application can read.
 
-> **Current scope:** The factory currently includes a Keithley DMM6500 adapter. The common interface is designed for extension, but other manufacturers and models need their own implemented and tested adapters.
+> **Current scope:** The factory currently includes a Keithley DMM6500 adapter. The common interface is designed for extension, but other manufacturers and models require their own implemented and tested adapters.
 
-## Features
+## ✨ Features
 
 | Feature | Description |
-|---|---|
-| VISA discovery | Enumerates VISA `INSTR` resources and queries `*IDN?`. |
-| Driver interface | Provides common connection, configuration, reading, and error-handling methods. |
-| Measurement menu | Represents DC/AC voltage, DC/AC current, 2-wire/4-wire resistance, temperature, continuity, diode, frequency, period, and capacitance in the current menu. |
-| Error reporting | Reports VISA failures, parsing failures, and instrument SCPI errors where implemented. |
-| Live JSON snapshot | Replaces a JSON file with the latest measurement or error state. |
-| Engineering display | Can display values using engineering prefixes, such as `1 µV`, `1 kΩ`, or `1 MHz`. |
-| Custom SCPI | Provides a console option for sending a command or query to the active instrument. |
+|:---|:---|
+| **VISA Discovery** | Enumerates VISA `INSTR` resources and queries `*IDN?`. |
+| **Driver Interface** | Provides common connection, configuration, reading, and error-handling methods. |
+| **Measurement Menu** | Represents DC/AC voltage, DC/AC current, 2-wire/4-wire resistance, temperature, continuity, diode, frequency, period, and capacitance in the current menu. |
+| **Error Reporting** | Reports VISA failures, parsing failures, and instrument SCPI errors where implemented. |
+| **Live JSON Snapshot** | Replaces a JSON file with the latest measurement or error state. |
+| **Engineering Display** | Can display values using engineering prefixes, such as `1 µV`, `1 kΩ`, or `1 MHz`. |
+| **Custom SCPI** | Provides a console option for sending a command or query to the active instrument. |
 
 > **Important:** A menu entry or enum does not, by itself, prove that a function works on every instrument. Validate each SCPI mapping against the specific model, firmware, terminal configuration, and instrument manual.
 
-## Architecture
+---
+
+## 🏗️ Architecture
 
 ```text
-Console application (src/main.cpp)
-              |
-              v
-          IDMMDriver
-          /        \
-         v          v
-   DMMFactory   LiveJsonPublisher
-         |
-         v
-  Keithley6500Driver
-         |
-         v
-  VISA / SCPI / physical instrument
+                 Console Application
+                     src/main.cpp
+                          |
+                          v
+                      IDMMDriver
+                          |
+             +------------+------------+
+             |                         |
+             v                         v
+         DMMFactory             LiveJsonPublisher
+             |
+             v
+      Keithley6500Driver
+             |
+             v
+      VISA / SCPI Interface
+             |
+             v
+      Physical DMM6500
 ```
 
-### Project layout
+### 📁 Project Structure
 
 ```text
 dmm6.5k/
@@ -80,20 +102,22 @@ dmm6.5k/
 │   ├── IDMMDriver.h
 │   ├── Keithley6500Driver.h
 │   └── LiveJsonPublisher.h
+│
 ├── src/
 │   ├── DMMFactory.cpp
 │   ├── Keithley6500Driver.cpp
 │   ├── LiveJsonPublisher.cpp
 │   └── main.cpp
+│
 ├── CMakeLists.txt
 ├── README.md
 └── .gitignore
 ```
 
-### Component responsibilities
+### 🧩 Component Responsibilities
 
 | Component | Responsibility |
-|---|---|
+|:---|:---|
 | `IDMMDriver` | Defines the common driver contract and measurement data types. |
 | `DMMFactory` | Selects a driver based on instrument identity. |
 | `Keithley6500Driver` | Handles VISA sessions and model-specific SCPI commands. |
@@ -101,22 +125,26 @@ dmm6.5k/
 | `EngineeringFormat.h` | Converts numeric values into readable engineering-prefix strings. |
 | `main.cpp` | Handles discovery, the console menu, the reading loop, and user interaction. |
 
-## Requirements
+---
+
+## ⚙️ Requirements
 
 - Windows 10 or Windows 11
 - CMake
 - Visual Studio Build Tools / MSVC with a Windows SDK
 - NI-VISA or a compatible VISA implementation
-- A Keithley DMM6500 connected through a VISA-supported interface (USB, LAN, or GPIB, as configured)
+- Keithley DMM6500 connected through a VISA-supported interface
 - Git (optional, for version control)
 
 The CMake project must point to the VISA header and library installed on your machine. Do not assume another computer uses the same installation paths.
 
-## Build and run
+---
+
+## 🚀 Build and Run
 
 Open PowerShell in the repository root.
 
-### 1. Configure the project
+### 1. Configure the Project
 
 ```powershell
 cmake -S . -B build
@@ -134,7 +162,7 @@ cmake --build build --config Debug
 .\build\Debug\DMM6500_Console.exe
 ```
 
-### 4. Optional command-line arguments
+### 4. Optional Command-Line Arguments
 
 Some project versions may support an output path and update interval, for example:
 
@@ -144,22 +172,24 @@ Some project versions may support an output path and update interval, for exampl
 
 This example requests `latest.json` and a 1000 ms update interval. Confirm the argument handling in your checked-out `src/main.cpp`; command-line behavior depends on the version you built.
 
-## Using the console
+---
+
+## 🖥️ Using the Console
 
 Typical workflow:
 
 1. Connect and power on the instrument.
 2. Launch the application and select a discovered, supported DMM.
-3. Choose **Configure measurement** and select a function.
-4. Choose **Read once** to take one reading.
-5. Choose **Live update loop** to repeatedly publish readings.
+3. Choose **Configure Measurement** and select a function.
+4. Choose **Read Once** to take one reading.
+5. Choose **Live Update Loop** to repeatedly publish readings.
 6. Press `q` to stop live mode, where supported.
 7. Open the JSON file to inspect the latest state.
 
-### Console menu
+### Console Menu
 
 | Option | Action |
-|:---:|---|
+|:---:|:---|
 | `1` | Configure measurement |
 | `2` | Read once |
 | `3` | Live update loop |
@@ -169,11 +199,13 @@ Typical workflow:
 
 The exact menu and supported options depend on the source version currently built.
 
-## Live JSON output
+---
+
+## 📡 Live JSON Output
 
 By default, the application writes `latest.json` relative to its **current working directory**. If a path is supplied on the command line and that build supports it, that path is used instead.
 
-Example successful snapshot:
+### Example JSON Snapshot
 
 ```json
 {
@@ -193,11 +225,11 @@ Example successful snapshot:
 }
 ```
 
-This is an illustrative schema. Actual fields and values depend on the current implementation and instrument response.
+> This is an illustrative schema. Actual fields and values depend on the current implementation and instrument response.
 
-### Read JSON from another program
+### Reading JSON from Another Program
 
-Python example:
+Example using Python:
 
 ```python
 import json
@@ -214,26 +246,32 @@ else:
     print("Measurement unavailable:", data.get("error", "unknown error"))
 ```
 
-Use the numeric `value` field for calculations. A display string such as `1 kΩ` is intended for people; the machine-readable value should remain numeric in base units (for example, `1000` with unit `ohm`).
+Use the numeric `value` field for calculations. A display string such as `1 kΩ` is intended for people; the machine-readable value should remain numeric in base units, for example `1000` with unit `ohm`.
 
-### Snapshot versus history
+### Snapshot vs. History
 
-`latest.json` is a **latest-value snapshot**, not a measurement history. Each new reading replaces the previous snapshot. To keep a history, add a separate CSV or JSON Lines logger rather than trying to preserve every reading in this file.
+`latest.json` is a **latest-value snapshot**, not a measurement history. Each new reading replaces the previous snapshot.
 
-## Engineering-unit formatting
+To preserve historical measurements, add a separate CSV or JSON Lines logger rather than trying to store every reading in this file.
+
+---
+
+## 📐 Engineering-Unit Formatting
 
 Engineering prefixes make console output easier to read.
 
-| Numeric value | Unit | Example display |
-|---:|---|---|
-| `0.000001` | `V` | `1 µV` |
-| `0.001` | `V` | `1 mV` |
-| `1000` | `ohm` | `1 kΩ` |
-| `1000000` | `Hz` | `1 MHz` |
+| Numeric Value | Unit | Example Display |
+|---:|:---:|:---|
+| `0.000001` | V | `1 µV` |
+| `0.001` | V | `1 mV` |
+| `1000` | ohm | `1 kΩ` |
+| `1000000` | Hz | `1 MHz` |
 
 The exact output depends on the formatter implementation and supported unit mappings. Keep raw numeric values and units separate from formatted display text.
 
-## Adding another DMM model
+---
+
+## 🔌 Adding Another DMM Model
 
 Do not assume all manufacturers use identical SCPI commands.
 
@@ -246,12 +284,16 @@ Do not assume all manufacturers use identical SCPI commands.
 
 The factory currently recognizes the Keithley DMM6500 adapter. Other vendors are not supported merely because they appear in the roadmap.
 
-## Troubleshooting
+---
+
+## 🛠️ Troubleshooting
 
 <details>
 <summary><strong>CMake cannot find VISA</strong></summary>
 
-Check the VISA include and library paths in `CMakeLists.txt`. Confirm the SDK and architecture match the compiler (for example, 64-bit MSVC and 64-bit VISA libraries). Then rerun:
+Check the VISA include and library paths in `CMakeLists.txt`. Confirm that the SDK and architecture match the compiler, for example, 64-bit MSVC and 64-bit VISA libraries.
+
+Run:
 
 ```powershell
 cmake -S . -B build
@@ -274,7 +316,9 @@ cmake --build build --config Debug
 <details>
 <summary><strong>SCPI error 1135: expected closing quotes</strong></summary>
 
-This indicates a malformed quoted SCPI parameter. Inspect the exact command sent by the driver and compare it with the syntax in the DMM6500 reference manual. C++ string escaping and SCPI quoting are separate layers; log the final command string to diagnose it.
+This indicates a malformed quoted SCPI parameter. Inspect the exact command sent by the driver and compare it with the syntax in the DMM6500 reference manual.
+
+C++ string escaping and SCPI quoting are separate layers. Log the final command string to diagnose it.
 
 </details>
 
@@ -296,16 +340,21 @@ These are Git line-ending conversion warnings on Windows, not compiler errors. I
 
 </details>
 
-## Safety and limitations
+---
+
+## ⚠️ Safety and Limitations
 
 - Verify the correct terminals, measurement function, input limits, leads, fuses, and category ratings before connecting a source.
 - Never connect a current input directly across a voltage source.
 - Disconnect power and discharge capacitors before resistance, continuity, diode, or capacitance checks where appropriate.
 - Treat SCPI commands, auto-ranging, and terminal routing as instrument-specific.
-- Do not use this project as a safety interlock or assume a successful VISA connection guarantees a valid measurement.
+- Do not use this project as a safety interlock.
+- A successful VISA connection does not guarantee a valid measurement.
 - Validate every supported function on actual hardware before relying on results in production.
 
-## Roadmap
+---
+
+## 🗺️ Roadmap
 
 - [ ] Validate all advertised measurement functions on a physical DMM6500.
 - [ ] Add automated unit tests for parsing and engineering formatting.
