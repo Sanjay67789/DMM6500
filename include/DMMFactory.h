@@ -1,20 +1,12 @@
 #pragma once
-
 #include "IDMMDriver.h"
-#include "Keithley6500Driver.h"
 #include <memory>
+#include <string>
 
-enum class DMMType {
-    KEITHLEY_6500
-};
+enum class DMMType { KEITHLEY_6500, UNSUPPORTED };
 
 class DMMFactory {
 public:
-    static std::unique_ptr<IDMMDriver> CreateDriver(DMMType type) {
-        switch (type) {
-        case DMMType::KEITHLEY_6500:
-            return std::make_unique<Keithley6500Driver>();
-        }
-        return nullptr;
-    }
+    // Conservative: only create an adapter when identity matches a known model family.
+    static std::unique_ptr<IDMMDriver> CreateForIdentity(const std::string& identity);
 };

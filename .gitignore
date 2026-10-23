@@ -1,0 +1,10 @@
+build/
+.vs/
+Debug/
+Release/
+*.obj
+*.pdb
+*.ilk
+*.tlog/
+latest.json
+latest.json.tmp
