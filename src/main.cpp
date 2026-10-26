@@ -20,11 +20,18 @@
 
 using namespace std;
 
-struct FoundDevice { string address; unique_ptr<IDMMDriver> driver; string identity; };
+struct FoundDevice { 
+    string address; 
+    unique_ptr<IDMMDriver> driver; 
+    string identity; 
+};
 
 bool StopKeyPressed() {
 #ifdef _WIN32
-    if (_kbhit()) { int c = _getch(); return c == 'q' || c == 'Q'; }
+    if (_kbhit()) { 
+        int c = _getch(); 
+        return c == 'q' || c == 'Q';
+     }
     return false;
 #else
     fd_set set; FD_ZERO(&set); FD_SET(STDIN_FILENO, &set);
