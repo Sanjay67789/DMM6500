@@ -1,6 +1,6 @@
-#include "DMMFactory.h"
-#include "LiveJsonPublisher.h"
-#include "EngineeringFormat.h"
+#include "dmm/DMMFactory.h"
+#include "features/live_json/LiveJsonPublisher.h"
+#include "features/formatting/EngineeringFormat.h"
 #include <visa.h>
 #include <chrono>
 #include <algorithm>

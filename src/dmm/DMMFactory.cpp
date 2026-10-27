@@ -1,5 +1,5 @@
-#include "DMMFactory.h"
-#include "Keithley6500Driver.h"
+#include "dmm/DMMFactory.h"
+#include "dmm/drivers/keithley/Keithley6500Driver.h"
 #include <algorithm>
 #include <cctype>
 

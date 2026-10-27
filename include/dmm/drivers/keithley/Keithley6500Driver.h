@@ -1,5 +1,5 @@
 #pragma once
-#include "IDMMDriver.h"
+#include "dmm/IDMMDriver.h"
 #include <visa.h>
 #include <string>
 

@@ -1,5 +1,5 @@
-#include "LiveJsonPublisher.h"
-#include "EngineeringFormat.h"
+#include "features/live_json/LiveJsonPublisher.h"
+#include "features/formatting/EngineeringFormat.h"
 #include <cstdio>
 #include <chrono>
 #include <ctime>
