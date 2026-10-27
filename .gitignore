@@ -8,3 +8,6 @@ Release/
 *.tlog/
 latest.json
 latest.json.tmp
+# Local build artifacts
+plc.exe
+build-*/
